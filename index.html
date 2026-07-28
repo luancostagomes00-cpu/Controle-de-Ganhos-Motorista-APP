@@ -187,10 +187,6 @@
       <span class="tab-icon">🔴</span>Gastos
     </button>
     <button class="tab" onclick="switchTab('historico')">
-    <button class="tab" onclick="switchTab('backup')">
-   <span class="tab-icon">💾</span>Backup
-   </button>
-
       <span class="tab-icon">📋</span>Histórico
     </button>
   </div>
@@ -404,32 +400,22 @@
     </div>
 
     <!-- HISTÓRICO -->
-     Todas as transações
-  <button class="btn btn-ghost"
-          style="color:var(--red);"
-          onclick="limparTudo()">🗑️ Limpar</button>
-</div>
+    <div id="tab-historico" class="section">
 
-POR:
-<div class="card-title">
 
-  Todas as transações
-
-  <div style="display:flex;gap:6px;">
-
-    <button class="btn btn-ghost"
-            onclick="exportarBackup()">
-      💾 Backup
-    </button>
-
-    <button class="btn btn-ghost"
-            style="color:var(--red);"
-            onclick="limparTudo()">
-      🗑️ Limpar
-    </button>
+      <div class="card">
+        <div class="card-title">
+          Todas as transações
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost" onclick="exportarBackup()">💾 Backup</button>
+            <button class="btn btn-ghost" style="color:var(--red);" onclick="limparTudo()">🗑️ Limpar</button>
+          </div>
+        </div>
+        <div id="lista-todas"><div class="empty"><div class="empty-icon">📋</div>Nenhuma transação ainda.</div></div>
+      </div>
+    </div>
 
   </div>
-
 </div>
 
 <!-- Modal editar ganho -->
@@ -1031,6 +1017,18 @@ function salvarMeta() {
   closeMetaModal();
 }
 
+// ---- BACKUP ----
+function exportarBackup() {
+  const dados = JSON.stringify(state, null, 2);
+  const blob = new Blob([dados], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const hoje = new Date().toISOString().slice(0,10);
+  a.download = `backup-meu-controle-${hoje}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ---- LIMPAR ----
 function limparTudo() {
   if (!confirm('Apagar todos os dados? Esta ação não pode ser desfeita.')) return;
@@ -1174,6 +1172,7 @@ function renderMonthly() {
     '</div>';
   }).join('');
 }
+
 document.getElementById('g-data').value = hoje();
 document.getElementById('e-data').value = hoje();
 const now = new Date();
@@ -1181,14 +1180,6 @@ document.getElementById('header-date').textContent = now.toLocaleDateString('pt-
 renderDashboard();
 renderGanhos();
 renderGastos();
-function exportarBackup() {
-  const dados = JSON.stringify(state);
-  const blob = new Blob([dados], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'backup-meu-controle.json';
-  a.click();
-}
 </script>
 </body>
 </html>
