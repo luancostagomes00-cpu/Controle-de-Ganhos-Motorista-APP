@@ -284,13 +284,7 @@
           </div>
         </div>
       </div>
-      
-<div class="card"><div class="card-title">📊 Ganhos por Plataforma</div><canvas id="platform-chart" height="180"></canvas></div>
-<div class="card"><div class="card-title">📈 Evolução Financeira</div><canvas id="trend-chart" height="180"></canvas></div>
-<div class="card"><div class="card-title">🎯 Meta diária (R$100)</div><div id="daily-goal"></div></div>
-<div class="card"><div class="card-title">🔥 Heatmap Mensal</div><div id="heatmap"></div></div>
-<div class="card"><div class="card-title">🚗 Eficiência</div><div id="efficiency"></div></div>
-<div class="card" id="monthly-card">
+      <div class="card" id="monthly-card">
         <div class="card-title">Ganhos por mês</div>
         <div id="monthly-breakdown"></div>
       </div>
@@ -590,11 +584,7 @@ const DEFAULT_STATE = {
     {id:234,valor:130.59,plataforma:'Uber',data:'2026-07-21',corridas:7,horas:3.7,km:54.2,obs:'julho'},
     {id:218,valor:65.71,plataforma:'Uber',data:'2026-06-25',corridas:0,horas:1.0,km:29.94,obs:'junho'},
     {id:219,valor:169.69,plataforma:'Uber',data:'2026-06-27',corridas:0,horas:5.12,km:86.2,obs:'junho'},
-,
-    {id:9001,valor:75.51,plataforma:'99',data:'2026-07-25',corridas:7,horas:3,km:38.5,obs:'Adicionado em 27/07/2026'},
-    {id:9002,valor:244.75,plataforma:'99',data:'2026-07-26',corridas:11,horas:6,km:126.9,obs:'Adicionado em 27/07/2026'},
-    {id:9003,valor:201.56,plataforma:'Uber',data:'2026-07-26',corridas:12,horas:5.22,km:41.48,obs:'Adicionado em 27/07/2026'}
-
+    {id:220,valor:265.83,plataforma:'Uber',data:'2026-06-28',corridas:0,horas:6.77,km:113.97,obs:'junho'}
   ],
   gastos: [
     {id:101,valor:60.00,categoria:'gas',data:'2026-03-01',desc:'Combust\u00edvel'},
@@ -660,7 +650,7 @@ function switchTab(t) {
   document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   document.getElementById('content').scrollTop = 0;
-  if (t==='dashboard') renderDashboard(); renderAdvanced();
+  if (t==='dashboard') renderDashboard();
   if (t==='historico') renderHistorico();
 }
 
@@ -844,7 +834,7 @@ function togglePainelLista() {
   painelListaExpanded = !painelListaExpanded;
   var btn = document.getElementById('painel-toggle-btn');
   if (btn) btn.textContent = painelListaExpanded ? 'Recolher' : 'Ver todos';
-  renderPainelLista(filteredGanhos(), filteredGastos()); renderAdvanced();
+  renderPainelLista(filteredGanhos(), filteredGastos());
 }
 
 function renderPainelLista(fg, fe) {
@@ -909,7 +899,7 @@ function renderDashboard() {
   renderMonthly();
   var btn = document.getElementById('painel-toggle-btn');
   if (btn) btn.textContent = painelListaExpanded ? 'Recolher' : 'Ver todos';
-  renderPainelLista(filteredGanhos(), filteredGastos()); renderAdvanced();
+  renderPainelLista(filteredGanhos(), filteredGastos());
 }
 
 function renderWeekChart() {
@@ -1171,23 +1161,6 @@ function renderMonthly() {
 document.getElementById('g-data').value = hoje();
 document.getElementById('e-data').value = hoje();
 const now = new Date();
-
-function renderAdvanced(){
-const ganhos=state.ganhos;
-const byPlat={}; ganhos.forEach(g=>byPlat[g.plataforma]=(byPlat[g.plataforma]||0)+g.valor);
- if(window.platformChart) platformChart.destroy();
- platformChart=new Chart(document.getElementById('platform-chart'),{type:'bar',data:{labels:Object.keys(byPlat),datasets:[{data:Object.values(byPlat)}]}});
- const byDay={}; ganhos.forEach(g=>byDay[g.data]=(byDay[g.data]||0)+g.valor);
- const days=Object.keys(byDay).sort().slice(-15);
- if(window.trendChart) trendChart.destroy();
- trendChart=new Chart(document.getElementById('trend-chart'),{type:'line',data:{labels:days,datasets:[{label:'Ganhos',data:days.map(d=>byDay[d])}]}});
- let dg=''; days.forEach(d=>{dg+=`<span style="display:inline-block;margin:2px;padding:4px 6px;border-radius:6px;background:${(byDay[d]||0)>=100?'#3fb950':'#f85149'}">${d.slice(8)}</span>`});
- document.getElementById('daily-goal').innerHTML=dg;
- document.getElementById('heatmap').innerHTML=days.map(d=>`<span style="display:inline-block;width:18px;height:18px;margin:2px;background:${(byDay[d]||0)>200?'#3fb950':(byDay[d]||0)>100?'#d29922':'#21262d'}"></span>`).join('');
- const km=ganhos.reduce((a,g)=>a+(g.km||0),0); const receita=ganhos.reduce((a,g)=>a+g.valor,0); const horas=ganhos.reduce((a,g)=>a+(g.horas||0),0);
- document.getElementById('efficiency').innerHTML=`<div>R$/KM: ${(km?(receita/km):0).toFixed(2)}</div><div>R$/Hora: ${(horas?(receita/horas):0).toFixed(2)}</div>`;
-}
-
 document.getElementById('header-date').textContent = now.toLocaleDateString('pt-BR', { weekday:'short', day:'numeric', month:'short' });
 renderDashboard();
 renderGanhos();
