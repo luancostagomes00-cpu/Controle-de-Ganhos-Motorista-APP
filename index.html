@@ -187,6 +187,10 @@
       <span class="tab-icon">🔴</span>Gastos
     </button>
     <button class="tab" onclick="switchTab('historico')">
+    <button class="tab" onclick="switchTab('backup')">
+   <span class="tab-icon">💾</span>Backup
+   </button>
+
       <span class="tab-icon">📋</span>Histórico
     </button>
   </div>
@@ -400,8 +404,15 @@
     </div>
 
     <!-- HISTÓRICO -->
-    <div id="tab-historico" class="section">
+     Todas as transações
+  <button class="btn btn-ghost"
+          style="color:var(--red);"
+          onclick="limparTudo()">🗑️ Limpar</button>
+</div>
+
+POR:
 <div class="card-title">
+
   Todas as transações
 
   <div style="display:flex;gap:6px;">
@@ -418,15 +429,7 @@
     </button>
 
   </div>
-</div>
-``
 
-
-        <div id="lista-todas"><div class="empty"><div class="empty-icon">📋</div>Nenhuma transação ainda.</div></div>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 <!-- Modal editar ganho -->
@@ -984,30 +987,32 @@ function renderDonut(gastosList) {
     }
   });
 }
-<!-- HISTÓRICO -->
-<div id="tab-historico" class="section">
 
-  <div class="card">
+// ---- HISTÓRICO ----
+function renderHistorico() {
+  const totalG = state.ganhos.reduce((a,g)=>a+g.valor,0);
+  const totalE = state.gastos.reduce((a,g)=>a+g.valor,0);
+  const liq = totalG - totalE;
 
-    <div class="card-title">
-      Todas as transações
 
-      <div style="display:flex;gap:6px;">
+  const todas = [
+    ...state.ganhos.map(g=>({...g,tipo:'ganho'})),
+    ...state.gastos.map(g=>({...g,tipo:'gasto'}))
+  ].sort((a,b)=>b.data.localeCompare(a.data)||b.id-a.id);
 
-        <button class="btn btn-ghost"
-                onclick="exportarBackup()">
-          💾 Backup
-        </button>
-
-        <button class="btn btn-ghost"
-                style="color:var(--red);"
-                onclick="limparTudo()">
-          🗑️ Limpar
-        </button>
-
+  const el = document.getElementById('lista-todas');
+  if (!todas.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Nenhuma transação ainda.</div>'; return; }
+  el.innerHTML = todas.map(t => `
+    <div class="list-item">
+      <div class="item-icon ${t.tipo==='ganho'?'earn':'spend'}">${t.tipo==='ganho'?'🚗':(CAT_EMOJI[t.categoria]||'📦')}</div>
+      <div class="item-body">
+        <div class="item-name">${t.tipo==='ganho'?t.plataforma:t.desc}</div>
+        <div class="item-meta">${fmtData(t.data)}</div>
       </div>
-
-    </div>
+      <div class="item-amount ${t.tipo==='ganho'?'amount-pos':'amount-neg'}">${t.tipo==='ganho'?'+':'-'}${fmt(t.valor)}</div>
+      <button class="item-del" onclick="${t.tipo==='ganho'?'editarGanho':'editarGasto'}(${t.id})" style="color:var(--blue);">✏️</button>
+    </div>`).join('');
+}
 
 // ---- META ----
 function openMetaModal() {
@@ -1169,7 +1174,6 @@ function renderMonthly() {
     '</div>';
   }).join('');
 }
-
 document.getElementById('g-data').value = hoje();
 document.getElementById('e-data').value = hoje();
 const now = new Date();
@@ -1177,21 +1181,12 @@ document.getElementById('header-date').textContent = now.toLocaleDateString('pt-
 renderDashboard();
 renderGanhos();
 renderGastos();
-  function exportarBackup() {
-
+function exportarBackup() {
   const dados = JSON.stringify(state);
-
-  const blob = new Blob(
-    [dados],
-    { type: "application/json" }
-  );
-
-  const a = document.createElement("a");
-
+  const blob = new Blob([dados], { type: 'application/json' });
+  const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-
-  a.download = "backup-meu-controle.json";
-
+  a.download = 'backup-meu-controle.json';
   a.click();
 }
 </script>
