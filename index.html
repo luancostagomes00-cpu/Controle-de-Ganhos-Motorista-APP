@@ -181,6 +181,22 @@
   .fuel-legend span { display: flex; align-items: center; gap: 4px; }
   .fuel-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .field-hint { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* Resumo de gastos */
+  .resumo-table { width: 100%; border-collapse: collapse; }
+  .resumo-table thead th { text-align: left; font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; padding: 0 0 10px; font-weight: 600; }
+  .resumo-table thead th:last-child { text-align: right; }
+  .resumo-row td { padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .resumo-row:last-of-type td { border-bottom: none; }
+  .resumo-cat { display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: 0.2px; color: var(--text); text-transform: uppercase; font-size: 12px; }
+  .resumo-total { text-align: right; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .resumo-row.suspeito .resumo-cat { color: var(--amber); }
+  .resumo-row.suspeito .resumo-total { color: var(--amber); }
+  .resumo-row.liquido td { border-top: 1px solid var(--border2); padding-top: 14px; }
+  .resumo-row.liquido .resumo-cat { color: var(--green); }
+  .resumo-row.liquido .resumo-total { color: var(--green); font-size: 15px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin-top: 10px; }
+  .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--amber); }
 </style>
 </head>
 <body>
@@ -356,6 +372,14 @@
       </span>
       <span>100%</span>
     </div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Resumo de Gastos</div>
+        <table class="resumo-table">
+          <thead><tr><th>Categoria</th><th>Total</th></tr></thead>
+          <tbody id="resumo-gastos-body"></tbody>
+        </table>
       </div>
 
       <div class="card">
@@ -1240,6 +1264,7 @@
             <input class="form-input" type="text" id="e-desc" placeholder="Ex: Posto Shell">
           </div>
         </div>
+        <label class="checkbox-row"><input type="checkbox" id="e-suspeito"> ⚠️ Marcar como gasto suspeito</label>
         <button class="btn btn-red" onclick="adicionarGasto()">✕ &nbsp;Adicionar gasto</button>
       </div>
 
@@ -1365,6 +1390,7 @@
       </div>
     </div>
     <input type="hidden" id="ee-id">
+    <label class="checkbox-row"><input type="checkbox" id="ee-suspeito"> ⚠️ Marcar como gasto suspeito</label>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
       <button class="btn" onclick="closeEditGastoModal()">Cancelar</button>
       <button class="btn btn-red" onclick="salvarEditGasto()">Salvar</button>
@@ -1438,14 +1464,14 @@ const DEFAULT_STATE = {
     {id:4,valor:61.88,plataforma:'Uber',data:'2026-03-09',corridas:0,horas:1.3,km:22.14,obs:'março'},
     {id:5,valor:105.14,plataforma:'Uber',data:'2026-03-10',corridas:0,horas:2.7,km:43.82,obs:'março'},
     {id:6,valor:96.43,plataforma:'Uber',data:'2026-03-18',corridas:0,horas:2.7,km:42.4,obs:'março'},
-    {id:7,valor:149.80,plataforma:'Uber',data:'2026-03-20',corridas:0,horas:3.97,km:99.37,obs:'março'},
-    {id:8,valor:103.00,plataforma:'Uber',data:'2026-03-21',corridas:0,horas:2.6,km:44.48,obs:'março'},
-    {id:9,valor:133.00,plataforma:'Uber',data:'2026-03-27',corridas:0,horas:3.5,km:58.65,obs:'março'},
+    {id:7,valor:149.8,plataforma:'Uber',data:'2026-03-20',corridas:0,horas:3.97,km:99.37,obs:'março'},
+    {id:8,valor:103,plataforma:'Uber',data:'2026-03-21',corridas:0,horas:2.6,km:44.48,obs:'março'},
+    {id:9,valor:133,plataforma:'Uber',data:'2026-03-27',corridas:0,horas:3.5,km:58.65,obs:'março'},
     {id:10,valor:117.44,plataforma:'Uber',data:'2026-03-28',corridas:0,horas:3.9,km:48.97,obs:'março'},
     {id:11,valor:58.68,plataforma:'Uber',data:'2026-04-07',corridas:0,horas:1.8,km:27.48,obs:'abril'},
     {id:12,valor:22.56,plataforma:'Uber',data:'2026-04-10',corridas:0,horas:0.99,km:11.37,obs:'abril'},
     {id:13,valor:65.01,plataforma:'Uber',data:'2026-04-11',corridas:0,horas:1.8,km:31.74,obs:'abril'},
-    {id:14,valor:63.17,plataforma:'Uber',data:'2026-04-15',corridas:0,horas:2.0,km:34.74,obs:'abril'},
+    {id:14,valor:63.17,plataforma:'Uber',data:'2026-04-15',corridas:0,horas:2,km:34.74,obs:'abril'},
     {id:15,valor:52.12,plataforma:'Uber',data:'2026-04-16',corridas:0,horas:1.5,km:26.27,obs:'abril'},
     {id:16,valor:26.88,plataforma:'Uber',data:'2026-04-18',corridas:0,horas:0.97,km:13.17,obs:'abril'},
     {id:17,valor:34.88,plataforma:'Uber',data:'2026-04-19',corridas:0,horas:0.69,km:5.58,obs:'abril'},
@@ -1461,8 +1487,8 @@ const DEFAULT_STATE = {
     {id:204,valor:67.47,plataforma:'Uber',data:'2026-05-24',corridas:4,horas:0,km:0,obs:'maio'},
     {id:205,valor:88.89,plataforma:'Uber',data:'2026-06-05',corridas:5,horas:0,km:0,obs:'junho'},
     {id:206,valor:88.56,plataforma:'Uber',data:'2026-06-12',corridas:5,horas:0,km:0,obs:'junho'},
-    {id:207,valor:152.70,plataforma:'Uber',data:'2026-06-13',corridas:8,horas:0,km:0,obs:'junho'},
-    {id:208,valor:99.80,plataforma:'Uber',data:'2026-06-15',corridas:6,horas:0,km:0,obs:'junho'},
+    {id:207,valor:152.7,plataforma:'Uber',data:'2026-06-13',corridas:8,horas:0,km:0,obs:'junho'},
+    {id:208,valor:99.8,plataforma:'Uber',data:'2026-06-15',corridas:6,horas:0,km:0,obs:'junho'},
     {id:209,valor:141.29,plataforma:'Uber',data:'2026-06-16',corridas:8,horas:0,km:0,obs:'junho'},
     {id:210,valor:41.18,plataforma:'Uber',data:'2026-06-18',corridas:3,horas:0,km:0,obs:'junho'},
     {id:211,valor:106.93,plataforma:'Uber',data:'2026-06-19',corridas:6,horas:0,km:0,obs:'junho'},
@@ -1472,21 +1498,21 @@ const DEFAULT_STATE = {
     {id:215,valor:107.17,plataforma:'Uber',data:'2026-06-22',corridas:0,horas:2.8,km:43.8,obs:'junho'},
     {id:216,valor:107.17,plataforma:'Uber',data:'2026-06-23',corridas:0,horas:2.78,km:40.27,obs:'junho'},
     {id:217,valor:168.83,plataforma:'Uber',data:'2026-06-24',corridas:0,horas:4.02,km:63.47,obs:'junho'},
-    {id:221,valor:32.90,plataforma:'99',data:'2026-06-24',corridas:0,horas:0,km:17.7,obs:'junho'},
+    {id:221,valor:32.9,plataforma:'99',data:'2026-06-24',corridas:0,horas:0,km:17.7,obs:'junho'},
     {id:222,valor:944.25,plataforma:'99',data:'2026-06-30',corridas:57,horas:0,km:111,obs:'demonstrativo mensal junho'},
     {id:223,valor:181.27,plataforma:'Uber',data:'2026-07-04',corridas:0,horas:4.37,km:75.23,obs:'julho'},
-    {id:224,valor:139.79,plataforma:'Uber',data:'2026-07-05',corridas:0,horas:3.0,km:60.79,obs:'julho'},
+    {id:224,valor:139.79,plataforma:'Uber',data:'2026-07-05',corridas:0,horas:3,km:60.79,obs:'julho'},
     {id:225,valor:118.74,plataforma:'Uber',data:'2026-07-06',corridas:0,horas:2.4,km:35.11,obs:'julho'},
     {id:226,valor:111.53,plataforma:'Uber',data:'2026-07-07',corridas:0,horas:2.82,km:56.99,obs:'julho'},
     {id:227,valor:145.41,plataforma:'Uber',data:'2026-07-08',corridas:0,horas:3.45,km:73.46,obs:'julho'},
     {id:228,valor:128.39,plataforma:'Uber',data:'2026-07-09',corridas:0,horas:3.23,km:53.57,obs:'julho'},
-    {id:229,valor:199.90,plataforma:'Uber',data:'2026-07-10',corridas:0,horas:4.23,km:79.35,obs:'julho'},
+    {id:229,valor:199.9,plataforma:'Uber',data:'2026-07-10',corridas:0,horas:4.23,km:79.35,obs:'julho'},
     {id:230,valor:136.02,plataforma:'Uber',data:'2026-07-14',corridas:10,horas:3.5,km:48.15,obs:'julho'},
     {id:231,valor:140.38,plataforma:'Uber',data:'2026-07-15',corridas:0,horas:3.05,km:59.65,obs:'julho'},
     {id:232,valor:304.57,plataforma:'Uber',data:'2026-07-18',corridas:22,horas:7.15,km:117.44,obs:'julho'},
     {id:233,valor:218.65,plataforma:'Uber',data:'2026-07-19',corridas:15,horas:4.25,km:81.31,obs:'julho'},
     {id:234,valor:130.59,plataforma:'Uber',data:'2026-07-21',corridas:7,horas:3.7,km:54.2,obs:'julho'},
-    {id:218,valor:65.71,plataforma:'Uber',data:'2026-06-25',corridas:0,horas:1.0,km:29.94,obs:'junho'},
+    {id:218,valor:65.71,plataforma:'Uber',data:'2026-06-25',corridas:0,horas:1,km:29.94,obs:'junho'},
     {id:219,valor:169.69,plataforma:'Uber',data:'2026-06-27',corridas:0,horas:5.12,km:86.2,obs:'junho'},
     {id:220,valor:265.83,plataforma:'Uber',data:'2026-06-28',corridas:0,horas:6.77,km:113.97,obs:'junho'},
     {id:235,valor:75.51,plataforma:'99',data:'2026-07-25',corridas:7,horas:3,km:38.5,obs:'julho'},
@@ -1498,33 +1524,80 @@ const DEFAULT_STATE = {
     {id:1785506930170,valor:143.18,plataforma:'Uber',data:'2026-07-30',corridas:8,horas:3.14,km:57.07,obs:''},
     {id:1785545768059,valor:31,plataforma:'Uber',data:'2026-07-31',corridas:2,horas:49,km:13.37,obs:''},
     {id:1785627832816,valor:306.06,plataforma:'Uber',data:'2026-08-01',corridas:22,horas:7.6,km:114.14,obs:''},
-    {id:1785717310550,valor:198.88,plataforma:'Uber',data:'2026-08-02',corridas:12,horas:4.26,km:78.02,obs:''}
+    {id:1785717310550,valor:198.88,plataforma:'Uber',data:'2026-08-02',corridas:12,horas:4.26,km:78.02,obs:''},
+    {id:1785872918461,valor:73.25,plataforma:'Uber',data:'2026-08-03',corridas:4,horas:2.2,km:32.26,obs:''},
+    {id:1785932302696,valor:195.44,plataforma:'Uber',data:'2026-08-04',corridas:10,horas:3.48,km:59,obs:''},
+    {id:1786041077351,valor:120.54,plataforma:'Uber',data:'2026-08-05',corridas:8,horas:3,km:49.95,obs:''},
+    {id:1786068490692,valor:202.55,plataforma:'Uber',data:'2026-08-06',corridas:10,horas:4.2,km:68.18,obs:''},
+    {id:1786996803278,valor:100.75,plataforma:'Uber',data:'2026-08-11',corridas:9,horas:2.37,km:31.5,obs:''},
+    {id:1786996851443,valor:58.72,plataforma:'Uber',data:'2026-08-12',corridas:5,horas:1.31,km:22.69,obs:''},
+    {id:1786996887979,valor:139.41,plataforma:'Uber',data:'2026-08-13',corridas:7,horas:3.32,km:53.19,obs:''},
+    {id:1786996925007,valor:38.22,plataforma:'Uber',data:'2026-08-14',corridas:2,horas:1.4,km:18.88,obs:''},
+    {id:1786996958739,valor:212.51,plataforma:'Uber',data:'2026-08-14',corridas:13,horas:6.4,km:92.62,obs:''},
+    {id:1786997880530,valor:43.73,plataforma:'Uber',data:'2026-08-07',corridas:2,horas:1.31,km:13.57,obs:''},
+    {id:1786997969013,valor:306.2,plataforma:'Uber',data:'2026-08-08',corridas:16,horas:6.4,km:123.04,obs:''},
+    {id:1786998015195,valor:146.78,plataforma:'Uber',data:'2026-08-09',corridas:9,horas:2.48,km:50.33,obs:''},
+    {id:1787160602009,valor:176.55,plataforma:'Uber',data:'2026-08-18',corridas:9,horas:4.13,km:66.14,obs:''},
+    {id:1787343544373,valor:172.47,plataforma:'Uber',data:'2026-08-19',corridas:9,horas:4.12,km:63.05,obs:''},
+    {id:1787343677685,valor:216.81,plataforma:'Uber',data:'2026-08-19',corridas:15,horas:5.1,km:66.58,obs:''},
+    {id:1787343744916,valor:221,plataforma:'Outra',data:'2026-08-17',corridas:0,horas:0,km:0,obs:''},
+    {id:1787683062278,valor:226.11,plataforma:'Uber',data:'2026-08-21',corridas:13,horas:5.1,km:100.24,obs:''},
+    {id:1787683099756,valor:351.89,plataforma:'Uber',data:'2026-08-22',corridas:24,horas:8.44,km:100.52,obs:''},
+    {id:1787683155136,valor:329.61,plataforma:'Uber',data:'2026-08-23',corridas:15,horas:6.55,km:108.52,obs:''},
+    {id:1787683188867,valor:93.51,plataforma:'Uber',data:'2026-08-24',corridas:5,horas:2.18,km:38.32,obs:''},
+    {id:1787749401930,valor:228.91,plataforma:'Uber',data:'2026-08-25',corridas:14,horas:4.38,km:88.78,obs:''},
+    {id:1788272999485,valor:328.3,plataforma:'Uber',data:'2026-08-30',corridas:25,horas:5.16,km:136.06,obs:''},
+    {id:1788273069030,valor:304.08,plataforma:'Uber',data:'2026-08-29',corridas:18,horas:4.44,km:154.82,obs:''},
+    {id:1788273106212,valor:94.3,plataforma:'Uber',data:'2026-08-28',corridas:5,horas:1.25,km:38.83,obs:''},
+    {id:1788273148093,valor:165.4,plataforma:'Uber',data:'2026-08-27',corridas:11,horas:2.4,km:61.41,obs:''},
+    {id:1788273248189,valor:147.2,plataforma:'Uber',data:'2026-08-26',corridas:12,horas:1.59,km:58.88,obs:''},
+    {id:1789390630487,valor:124.34,plataforma:'Uber',data:'2026-09-01',corridas:7,horas:1.48,km:51.77,obs:''},
+    {id:1789390689352,valor:90.83,plataforma:'Uber',data:'2026-09-03',corridas:5,horas:1.2,km:32.63,obs:''},
+    {id:1789390744862,valor:171.94,plataforma:'Uber',data:'2026-09-04',corridas:10,horas:2.08,km:50.09,obs:''},
+    {id:1789390814529,valor:143.1,plataforma:'Uber',data:'2026-09-05',corridas:9,horas:2.06,km:47.85,obs:''},
+    {id:1789390858143,valor:114.87,plataforma:'Uber',data:'2026-09-08',corridas:5,horas:1.39,km:39.23,obs:''},
+    {id:1789390934990,valor:183.58,plataforma:'Uber',data:'2026-09-09',corridas:9,horas:2.1,km:55.27,obs:''},
+    {id:1789390984587,valor:138.58,plataforma:'Uber',data:'2026-09-10',corridas:7,horas:2.02,km:51.75,obs:''},
+    {id:1789391028739,valor:86.1,plataforma:'Uber',data:'2026-09-11',corridas:5,horas:1.01,km:25.1,obs:''},
+    {id:1789391085550,valor:265.3,plataforma:'Uber',data:'2026-09-12',corridas:16,horas:3.11,km:118.52,obs:''},
+    {id:1789391113882,valor:107.37,plataforma:'Uber',data:'2026-09-13',corridas:7,horas:1.41,km:45.91,obs:''},
+    {id:1789504533685,valor:138.87,plataforma:'Uber',data:'2026-09-14',corridas:8,horas:3.33,km:48.46,obs:''},
+    {id:1789678150426,valor:175.37,plataforma:'Uber',data:'2026-09-16',corridas:10,horas:4.39,km:69.63,obs:''},
+    {id:1789737260370,valor:205.04,plataforma:'Uber',data:'2026-09-17',corridas:11,horas:4.31,km:82.1,obs:''},
+    {id:1790014100841,valor:180.82,plataforma:'Uber',data:'2026-09-18',corridas:13,horas:2.28,km:56.12,obs:''},
+    {id:1790014168586,valor:225.93,plataforma:'Uber',data:'2026-09-19',corridas:16,horas:3.2,km:88.38,obs:''},
+    {id:1790081641182,valor:210.68,plataforma:'Uber',data:'2026-09-21',corridas:14,horas:4.49,km:81.99,obs:''},
+    {id:1790190243439,valor:177.9,plataforma:'Uber',data:'2026-09-22',corridas:11,horas:3.52,km:60.23,obs:''},
+    {id:1790618968453,valor:177.18,plataforma:'Uber',data:'2026-09-24',corridas:10,horas:2.32,km:67.49,obs:''},
+    {id:1790619023666,valor:193.29,plataforma:'Uber',data:'2026-09-25',corridas:12,horas:2.42,km:68.36,obs:''},
+    {id:1790619067808,valor:392.68,plataforma:'Uber',data:'2026-09-26',corridas:18,horas:4.29,km:112.65,obs:''},
+    {id:1790619111361,valor:84.31,plataforma:'Uber',data:'2026-09-27',corridas:6,horas:1.29,km:33.02,obs:''}
   ],
   gastos: [
-    {id:101,valor:60.00,categoria:'gas',data:'2026-03-01',desc:'Combust\u00edvel'},
-    {id:102,valor:60.00,categoria:'gas',data:'2026-03-07',desc:'Combust\u00edvel'},
-    {id:103,valor:62.00,categoria:'gas',data:'2026-03-08',desc:'Combust\u00edvel'},
-    {id:401,valor:29.00,categoria:'outro',data:'2026-07-04',desc:'Taxa fixa Uber'},
-    {id:402,valor:29.00,categoria:'outro',data:'2026-07-05',desc:'Taxa fixa Uber'},
-    {id:403,valor:29.00,categoria:'outro',data:'2026-07-06',desc:'Taxa fixa Uber'},
-    {id:404,valor:29.00,categoria:'outro',data:'2026-07-07',desc:'Taxa fixa Uber'},
-    {id:405,valor:29.00,categoria:'outro',data:'2026-07-08',desc:'Taxa fixa Uber'},
-    {id:406,valor:29.00,categoria:'outro',data:'2026-07-09',desc:'Taxa fixa Uber'},
-    {id:407,valor:29.00,categoria:'outro',data:'2026-07-10',desc:'Taxa fixa Uber'},
-    {id:408,valor:29.00,categoria:'outro',data:'2026-07-14',desc:'Taxa fixa Uber'},
-    {id:409,valor:29.00,categoria:'outro',data:'2026-07-15',desc:'Taxa fixa Uber'},
-    {id:410,valor:29.00,categoria:'outro',data:'2026-07-18',desc:'Taxa fixa Uber'},
-    {id:411,valor:100.00,categoria:'gas',data:'2026-07-18',desc:'Combustível'},
-    {id:412,valor:29.00,categoria:'outro',data:'2026-07-19',desc:'Taxa fixa Uber'},
-    {id:413,valor:40.00,categoria:'gas',data:'2026-07-19',desc:'Combustível'},
-    {id:414,valor:29.00,categoria:'outro',data:'2026-07-21',desc:'Taxa fixa Uber'},
-    {id:415,valor:29.00,categoria:'outro',data:'2026-07-25',desc:'Taxa fixa Uber'},
-    {id:301,valor:24.00,categoria:'outro',data:'2026-06-12',desc:'Cobrança Uber parceiro'},
-    {id:302,valor:24.00,categoria:'outro',data:'2026-06-15',desc:'Cobrança Uber parceiro'},
-    {id:303,valor:24.00,categoria:'outro',data:'2026-06-16',desc:'Cobrança Uber parceiro'},
-    {id:304,valor:24.00,categoria:'outro',data:'2026-06-18',desc:'Cobrança Uber parceiro'},
-    {id:305,valor:24.00,categoria:'outro',data:'2026-06-19',desc:'Cobrança Uber parceiro'},
-    {id:306,valor:24.00,categoria:'outro',data:'2026-06-21',desc:'Cobrança Uber parceiro'},
+    {id:101,valor:60,categoria:'gas',data:'2026-03-01',desc:'Combustível'},
+    {id:102,valor:60,categoria:'gas',data:'2026-03-07',desc:'Combustível'},
+    {id:103,valor:62,categoria:'gas',data:'2026-03-08',desc:'Combustível'},
+    {id:401,valor:29,categoria:'outro',data:'2026-07-04',desc:'Taxa fixa Uber'},
+    {id:402,valor:29,categoria:'outro',data:'2026-07-05',desc:'Taxa fixa Uber'},
+    {id:403,valor:29,categoria:'outro',data:'2026-07-06',desc:'Taxa fixa Uber'},
+    {id:404,valor:29,categoria:'outro',data:'2026-07-07',desc:'Taxa fixa Uber'},
+    {id:405,valor:29,categoria:'outro',data:'2026-07-08',desc:'Taxa fixa Uber'},
+    {id:406,valor:29,categoria:'outro',data:'2026-07-09',desc:'Taxa fixa Uber'},
+    {id:407,valor:29,categoria:'outro',data:'2026-07-10',desc:'Taxa fixa Uber'},
+    {id:408,valor:29,categoria:'outro',data:'2026-07-14',desc:'Taxa fixa Uber'},
+    {id:409,valor:29,categoria:'outro',data:'2026-07-15',desc:'Taxa fixa Uber'},
+    {id:410,valor:29,categoria:'outro',data:'2026-07-18',desc:'Taxa fixa Uber'},
+    {id:411,valor:100,categoria:'gas',data:'2026-07-18',desc:'Combustível'},
+    {id:412,valor:29,categoria:'outro',data:'2026-07-19',desc:'Taxa fixa Uber'},
+    {id:413,valor:40,categoria:'gas',data:'2026-07-19',desc:'Combustível'},
+    {id:414,valor:29,categoria:'outro',data:'2026-07-21',desc:'Taxa fixa Uber'},
+    {id:415,valor:29,categoria:'outro',data:'2026-07-25',desc:'Taxa fixa Uber'},
+    {id:301,valor:24,categoria:'outro',data:'2026-06-12',desc:'Cobrança Uber parceiro'},
+    {id:302,valor:24,categoria:'outro',data:'2026-06-15',desc:'Cobrança Uber parceiro'},
+    {id:303,valor:24,categoria:'outro',data:'2026-06-16',desc:'Cobrança Uber parceiro'},
+    {id:304,valor:24,categoria:'outro',data:'2026-06-18',desc:'Cobrança Uber parceiro'},
+    {id:305,valor:24,categoria:'outro',data:'2026-06-19',desc:'Cobrança Uber parceiro'},
+    {id:306,valor:24,categoria:'outro',data:'2026-06-21',desc:'Cobrança Uber parceiro'},
     {id:1785348653847,valor:59.8,categoria:'gas',data:'2026-07-29',desc:'Combustível',litros:10,precoLitro:5.9799999999999995},
     {id:1785379093482,valor:32,categoria:'outro',data:'2026-07-29',desc:'Taxa Uber '},
     {id:1785379043109,valor:29,categoria:'outro',data:'2026-07-30',desc:'Taxa fixa Uber'},
@@ -1534,7 +1607,84 @@ const DEFAULT_STATE = {
     {id:1785545768061,valor:29,categoria:'outro',data:'2026-07-31',desc:'Taxa fixa Uber'},
     {id:1785545788934,valor:29,categoria:'outro',data:'2026-07-31',desc:'Taxa Uber '},
     {id:1785627832817,valor:29,categoria:'outro',data:'2026-08-01',desc:'Taxa fixa Uber'},
-    {id:1785717310552,valor:29,categoria:'outro',data:'2026-08-02',desc:'Taxa fixa Uber'}
+    {id:1785717310552,valor:29,categoria:'outro',data:'2026-08-02',desc:'Taxa fixa Uber'},
+    {id:1785793610301,valor:40,categoria:'gas',data:'2026-08-03',desc:'Combustível',litros:8.7,precoLitro:4.597701149425288},
+    {id:1785872918462,valor:29,categoria:'outro',data:'2026-08-03',desc:'Taxa fixa Uber'},
+    {id:1785932302698,valor:29,categoria:'outro',data:'2026-08-04',desc:'Taxa fixa Uber'},
+    {id:1785932337454,valor:45.9,categoria:'gas',data:'2026-08-04',desc:'Combustível',litros:10,precoLitro:4.59},
+    {id:1786041077353,valor:29,categoria:'outro',data:'2026-08-05',desc:'Taxa fixa Uber'},
+    {id:1786068490695,valor:29,categoria:'outro',data:'2026-08-06',desc:'Taxa fixa Uber'},
+    {id:1786068509232,valor:49.9,categoria:'gas',data:'2026-08-06',desc:'Combustível',litros:10,precoLitro:4.99},
+    {id:1786996803281,valor:29,categoria:'outro',data:'2026-08-11',desc:'Taxa fixa Uber'},
+    {id:1786996851444,valor:29,categoria:'outro',data:'2026-08-12',desc:'Taxa fixa Uber'},
+    {id:1786996887980,valor:29,categoria:'outro',data:'2026-08-13',desc:'Taxa fixa Uber'},
+    {id:1786997056401,valor:50,categoria:'gas',data:'2026-08-11',desc:'Combustível',litros:10.9,precoLitro:4.587155963302752},
+    {id:1786997182311,valor:45.9,categoria:'gas',data:'2026-08-13',desc:'Combustível',litros:10,precoLitro:4.59},
+    {id:1786997492750,valor:100,categoria:'gas',data:'2026-08-08',desc:'Combustível',litros:21.8,precoLitro:4.587155963302752},
+    {id:1786997880532,valor:29,categoria:'outro',data:'2026-08-07',desc:'Taxa fixa Uber'},
+    {id:1786998015196,valor:29,categoria:'outro',data:'2026-08-09',desc:'Taxa fixa Uber'},
+    {id:1787160625921,valor:32,categoria:'outro',data:'2026-08-18',desc:'Outro'},
+    {id:1787160654817,valor:63.8,categoria:'gas',data:'2026-08-18',desc:'Combustível',litros:10,precoLitro:6.38},
+    {id:1787160772798,valor:47.9,categoria:'gas',data:'2026-08-18',desc:'Combustível',litros:10,precoLitro:4.79},
+    {id:1787160812253,valor:879,categoria:'manut',data:'2026-08-18',desc:'Manutenção'},
+    {id:1787343544375,valor:32,categoria:'outro',data:'2026-08-19',desc:'Taxa fixa Uber'},
+    {id:1787343635652,valor:51.35,categoria:'gas',data:'2026-08-19',desc:'Combustível',litros:10,precoLitro:5.135},
+    {id:1787343718651,valor:98.9,categoria:'gas',data:'2026-08-20',desc:'Combustível',litros:18,precoLitro:5.4944444444444445},
+    {id:1787683062279,valor:29,categoria:'outro',data:'2026-08-21',desc:'Taxa fixa Uber'},
+    {id:1787683155137,valor:29,categoria:'outro',data:'2026-08-23',desc:'Taxa fixa Uber'},
+    {id:1787683322060,valor:61.9,categoria:'gas',data:'2026-08-21',desc:'Combustível',litros:10,precoLitro:6.1899999999999995},
+    {id:1787683367599,valor:100,categoria:'gas',data:'2026-08-21',desc:'Combustível',litros:22,precoLitro:4.545454545454546},
+    {id:1787683415910,valor:60.9,categoria:'gas',data:'2026-08-23',desc:'Combustível',litros:10,precoLitro:6.09},
+    {id:1787749401931,valor:29,categoria:'outro',data:'2026-08-25',desc:'Taxa fixa Uber'},
+    {id:1788272999486,valor:29,categoria:'outro',data:'2026-08-30',desc:'Taxa fixa Uber'},
+    {id:1788273069031,valor:29,categoria:'outro',data:'2026-08-29',desc:'Taxa fixa Uber'},
+    {id:1788273106213,valor:29,categoria:'outro',data:'2026-08-28',desc:'Taxa fixa Uber'},
+    {id:1788273248190,valor:29,categoria:'outro',data:'2026-08-26',desc:'Taxa fixa Uber'},
+    {id:1788273397806,valor:70,categoria:'gas',data:'2026-08-26',desc:'Combustível',litros:10.16,precoLitro:6.889763779527559},
+    {id:1788273438735,valor:60.9,categoria:'gas',data:'2026-08-27',desc:'Combustível',litros:10,precoLitro:6.09},
+    {id:1788273503816,valor:60.9,categoria:'gas',data:'2026-08-28',desc:'Combustível',litros:10,precoLitro:6.09},
+    {id:1788273563597,valor:100,categoria:'gas',data:'2026-08-29',desc:'Combustível',litros:16.41,precoLitro:6.0938452163315056},
+    {id:1788273620779,valor:61.9,categoria:'gas',data:'2026-08-30',desc:'Combustível',litros:10,precoLitro:6.1899999999999995},
+    {id:1789390630488,valor:29,categoria:'outro',data:'2026-09-01',desc:'Taxa fixa Uber'},
+    {id:1789390689353,valor:29,categoria:'outro',data:'2026-09-03',desc:'Taxa fixa Uber'},
+    {id:1789390744863,valor:29,categoria:'outro',data:'2026-09-04',desc:'Taxa fixa Uber'},
+    {id:1789390814531,valor:29,categoria:'outro',data:'2026-09-05',desc:'Taxa fixa Uber'},
+    {id:1789390934992,valor:29,categoria:'outro',data:'2026-09-09',desc:'Taxa fixa Uber'},
+    {id:1789390984588,valor:29,categoria:'outro',data:'2026-09-10',desc:'Taxa fixa Uber'},
+    {id:1789391113883,valor:29,categoria:'outro',data:'2026-09-13',desc:'Taxa fixa Uber'},
+    {id:1789391595299,valor:22,categoria:'gas',data:'2026-09-01',desc:'Combustível'},
+    {id:1789391613112,valor:62.5,categoria:'gas',data:'2026-09-01',desc:'Combustível',litros:10,precoLitro:6.25},
+    {id:1789391631196,valor:60.9,categoria:'gas',data:'2026-09-02',desc:'Combustível',litros:10,precoLitro:6.09},
+    {id:1789391647762,valor:67.5,categoria:'gas',data:'2026-09-03',desc:'Combustível',litros:10,precoLitro:6.75},
+    {id:1789391686710,valor:45.5,categoria:'gas',data:'2026-09-04',desc:'Combustível',litros:10,precoLitro:4.55},
+    {id:1789391720730,valor:47.9,categoria:'gas',data:'2026-09-05',desc:'Combustível',litros:10,precoLitro:4.79},
+    {id:1789391747807,valor:60.9,categoria:'gas',data:'2026-09-08',desc:'Combustível',litros:10,precoLitro:6.09},
+    {id:1789391773672,valor:45.5,categoria:'gas',data:'2026-09-09',desc:'Combustível',litros:10,precoLitro:4.55},
+    {id:1789391790689,valor:61.09,categoria:'gas',data:'2026-09-11',desc:'Combustível',litros:10,precoLitro:6.109},
+    {id:1789391818856,valor:122,categoria:'gas',data:'2026-09-12',desc:'Combustível',litros:19.7,precoLitro:6.192893401015229},
+    {id:1789391833038,valor:123.8,categoria:'gas',data:'2026-09-13',desc:'Combustível',litros:20,precoLitro:6.1899999999999995},
+    {id:1789504533686,valor:29,categoria:'outro',data:'2026-09-14',desc:'Taxa fixa Uber'},
+    {id:1789678150428,valor:29,categoria:'outro',data:'2026-09-16',desc:'Taxa fixa Uber'},
+    {id:1789678192847,valor:47.9,categoria:'gas',data:'2026-09-16',desc:'Combustível',litros:10,precoLitro:4.79},
+    {id:1789678386963,valor:67.9,categoria:'gas',data:'2026-09-17',desc:'Combustível',litros:10,precoLitro:6.790000000000001},
+    {id:1789737260372,valor:29,categoria:'outro',data:'2026-09-17',desc:'Taxa fixa Uber'},
+    {id:1790014100843,valor:29,categoria:'outro',data:'2026-09-18',desc:'Taxa fixa Uber'},
+    {id:1790014168587,valor:29,categoria:'outro',data:'2026-09-19',desc:'Taxa fixa Uber'},
+    {id:1790014211401,valor:110,categoria:'gas',data:'2026-09-19',desc:'Combustível',litros:23.45,precoLitro:4.690831556503198},
+    {id:1790081641183,valor:29,categoria:'outro',data:'2026-09-21',desc:'Taxa fixa Uber'},
+    {id:1790081661981,valor:46.5,categoria:'gas',data:'2026-09-21',desc:'Combustível',litros:10,precoLitro:4.65},
+    {id:1790190243441,valor:29,categoria:'outro',data:'2026-09-22',desc:'Taxa fixa Uber'},
+    {id:1790190302229,valor:48.5,categoria:'gas',data:'2026-09-22',desc:'Combustível',litros:10,precoLitro:4.85},
+    {id:1790618968455,valor:29,categoria:'outro',data:'2026-09-24',desc:'Taxa fixa Uber'},
+    {id:1790619023667,valor:29,categoria:'outro',data:'2026-09-25',desc:'Taxa fixa Uber'},
+    {id:1790619067809,valor:29,categoria:'outro',data:'2026-09-26',desc:'Taxa fixa Uber'},
+    {id:1790619323576,valor:63.9,categoria:'gas',data:'2026-09-23',desc:'Combustível',litros:10,precoLitro:6.39},
+    {id:1790619334664,valor:68.5,categoria:'gas',data:'2026-09-24',desc:'Combustível',litros:10,precoLitro:6.85},
+    {id:1790619352978,valor:66.9,categoria:'gas',data:'2026-09-24',desc:'Combustível',litros:10,precoLitro:6.69},
+    {id:1790619363661,valor:47.5,categoria:'gas',data:'2026-09-25',desc:'Combustível',litros:10,precoLitro:4.75},
+    {id:1790619422028,valor:110,categoria:'gas',data:'2026-09-26',desc:'Combustível',litros:23.64,precoLitro:4.653130287648054},
+    {id:1790619432692,valor:46.9,categoria:'gas',data:'2026-09-27',desc:'Combustível',litros:10,precoLitro:4.6899999999999995},
+    {id:1790619462605,valor:62.9,categoria:'gas',data:'2026-09-27',desc:'Combustível',litros:10,precoLitro:6.29}
   ]
 };
 let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1689,11 +1839,13 @@ function adicionarGasto() {
       novoGasto.precoLitro = v / litros;
     }
   }
+  if (document.getElementById('e-suspeito').checked) novoGasto.suspeito = true;
   state.gastos.push(novoGasto);
   document.getElementById('e-valor').value = '';
   document.getElementById('e-desc').value = '';
   document.getElementById('e-litros').value = '';
   document.getElementById('e-precolitro').value = '';
+  document.getElementById('e-suspeito').checked = false;
   save(); renderGastos(); renderDashboard();
   switchTab('dashboard');
 }
@@ -1713,7 +1865,7 @@ function renderGastos() {
       '<div class="item-icon spend">' + (CAT_EMOJI[g.categoria]||'📦') + '</div>' +
       '<div class="item-body">' +
         '<div class="item-name">' + g.desc + '</div>' +
-        '<div class="item-meta">' + fmtData(g.data) + ' · <span class="badge ' + (CAT_BADGE[g.categoria]||'badge-gray') + '">' + (CATS[g.categoria]||'Outro') + '</span>' + (g.litros ? ' · ' + g.litros.toFixed(1) + 'L · ' + fmt(g.precoLitro) + '/L' : '') + '</div>' +
+        '<div class="item-meta">' + fmtData(g.data) + ' · <span class="badge ' + (CAT_BADGE[g.categoria]||'badge-gray') + '">' + (CATS[g.categoria]||'Outro') + '</span>' + (g.suspeito ? ' · <span class="badge badge-amber">⚠️ Suspeito</span>' : '') + (g.litros ? ' · ' + g.litros.toFixed(1) + 'L · ' + fmt(g.precoLitro) + '/L' : '') + '</div>' +
       '</div>' +
       '<div class="item-right"><div class="item-amount amount-neg">-' + fmt(g.valor) + '</div></div>' +
       '<button class="item-del" onclick="editarGasto(' + g.id + ')" style="color:var(--blue);">✏️</button>' +
@@ -1776,6 +1928,7 @@ function editarGasto(id) {
   document.getElementById('ee-data').value = g.data;
   document.getElementById('ee-desc').value = g.desc || '';
   document.getElementById('ee-litros').value = g.litros || '';
+  document.getElementById('ee-suspeito').checked = !!g.suspeito;
   toggleEditLitrosField();
   atualizarPrecoLitroEdit();
   document.getElementById('edit-gasto-modal').classList.add('open');
@@ -1792,6 +1945,8 @@ function salvarEditGasto() {
   state.gastos[idx].categoria = document.getElementById('ee-categoria').value;
   state.gastos[idx].data = document.getElementById('ee-data').value;
   state.gastos[idx].desc = document.getElementById('ee-desc').value;
+  if (document.getElementById('ee-suspeito').checked) state.gastos[idx].suspeito = true;
+  else delete state.gastos[idx].suspeito;
   if (state.gastos[idx].categoria === 'gas') {
     var litrosEdit = parseFloat(document.getElementById('ee-litros').value) || 0;
     if (litrosEdit > 0) {
@@ -1878,6 +2033,7 @@ function renderDashboard() {
   renderPlataformaChart(fg);
   renderGoal(totalG);
   renderDonut(fe);
+  renderResumoGastos(totalG, fe);
   renderLucroMesChart();
   renderMonthly();
   renderConsumoVeiculo(fg, fe);
@@ -1953,6 +2109,30 @@ function renderDonut(gastosList) {
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' '+fmt(ctx.raw) } } }
     }
   });
+}
+
+function renderResumoGastos(totalG, fe) {
+  const body = document.getElementById('resumo-gastos-body');
+  if (!body) return;
+  const soma = (pred) => fe.filter(pred).reduce((a,g)=>a+g.valor,0);
+  const gasolina = soma(g => g.categoria === 'gas' && !g.suspeito);
+  const taxa = soma(g => !g.suspeito && (g.desc||'').toLowerCase().indexOf('taxa') !== -1);
+  const lanche = soma(g => g.categoria === 'alimentacao' && !g.suspeito);
+  const suspeito = soma(g => !!g.suspeito);
+  const manutencao = soma(g => g.categoria === 'manut' && !g.suspeito);
+  const liquido = totalG - (gasolina + taxa + lanche + suspeito + manutencao);
+  const rows = [
+    { icon: '💰', label: 'Total Faturado', val: totalG },
+    { icon: '⛽', label: 'Total Gasolina', val: gasolina },
+    { icon: '🧾', label: 'Total Taxa', val: taxa },
+    { icon: '🍔', label: 'Total Lanche', val: lanche },
+    { icon: '⚠️', label: 'Total Gasto Suspeito', val: suspeito, cls: suspeito > 0 ? 'suspeito' : '' },
+    { icon: '🔧', label: 'Total Manutenção', val: manutencao }
+  ];
+  body.innerHTML = rows.map(r =>
+    '<tr class="resumo-row ' + (r.cls||'') + '"><td><span class="resumo-cat">' + r.icon + ' ' + r.label.toUpperCase() + '</span></td><td class="resumo-total">' + fmt(r.val) + '</td></tr>'
+  ).join('') +
+  '<tr class="resumo-row liquido"><td><span class="resumo-cat">💵 Valor Líquido</span></td><td class="resumo-total">' + fmt(liquido) + '</td></tr>';
 }
 
 // ---- GRÁFICO: EVOLUÇÃO DO LUCRO DIÁRIO ----
